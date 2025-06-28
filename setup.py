@@ -3,8 +3,9 @@ from setuptools import setup
 setup(
     name='pre-commit-filename-linter',
     version='1.0.0',
-    description='Pre-commit filename linter for checking file naming conventions',
+    description='Pre-commit filename linter for checking file and directory naming conventions',
     author='Ahmet Demir',
+    url='https://github.com/ahmet-enes-demir/pre-commit-filename-linter',
     packages=['src'],
     package_dir={'src': 'src'},
     entry_points={
@@ -13,5 +14,8 @@ setup(
             'directory-linter=src.directory_checker:main',
         ],
     },
+    install_requires=[
+        'pyyaml',
+    ],
     python_requires='>=3.6',
 )
