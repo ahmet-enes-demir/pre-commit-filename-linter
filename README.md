@@ -10,6 +10,7 @@ A pre-commit filename linter to enforce file naming conventions based on Soliner
 - ✅ Preserves standard file names (README.md, Dockerfile, etc.)
 - ✅ Checks for descriptive file and directory names
 - ✅ Prevents special characters and spaces
+- ✅ Optional Unicode support for non-English characters (Turkish, etc.)
 - ✅ Exclude files and directories with regex patterns
 - ✅ YAML configuration file support
 
@@ -52,6 +53,19 @@ repos:
         args: ['--config', '.naming-convention.yaml']
 ```
 
+With Unicode support for non-English characters:
+
+```yaml
+repos:
+  - repo: https://github.com/ahmet-enes-demir/pre-commit-filename-linter.git
+    rev: v1.0.0
+    hooks:
+      - id: check-file-names
+        args: ['--allow-unicode']
+      - id: check-directory-names
+        args: ['--allow-unicode']
+```
+
 ## Naming Rules
 
 ### General Files
@@ -75,6 +89,12 @@ repos:
 - `Dockerfile`, `Makefile`
 - `.gitignore`, `.env.example`
 - And other common project files
+
+### Unicode Support
+- **Disabled by default** - only English characters allowed
+- **Enable with `--allow-unicode`** or `allow-unicode: true` in config
+- Supports Turkish and other Unicode characters when enabled
+- Examples: `internet-değişimi.md`, `çayır/` (when Unicode enabled)
 
 ## Examples
 
@@ -105,12 +125,14 @@ user_authentication.md   # Uses underscores for non-Python files
 doc1.md                  # Not descriptive
 system architecture.md   # Contains spaces
 file@name.md            # Special characters
+internet-değişimi.md     # Unicode chars without --allow-unicode
 
 Directories:
 UserService/             # Uses uppercase
 user_service/           # Uses underscores
 dir1/                   # Not descriptive
 my folder/              # Contains spaces
+çayır/                  # Unicode chars without allow-unicode: true
 ```
 
 ## Manual Usage
@@ -131,11 +153,15 @@ python3 src/directory_checker.py --exclude 'temp.*' src/ tests/
 # Use custom configuration
 python3 src/file_name_checker.py --config .naming-convention.yaml file1.md file2.py
 python3 src/directory_checker.py --config .naming-convention.yaml src/ tests/
+
+# Enable Unicode support for non-English characters
+python3 src/file_name_checker.py --allow-unicode internet-değişimi.md
+python3 src/directory_checker.py --allow-unicode çayır/
 ```
 
 ## Configuration
 
-The checker automatically detects file types and applies appropriate naming conventions. Use `--exclude` flag to skip files matching regex patterns or `--config` to use a YAML configuration file.
+The checker automatically detects file types and applies appropriate naming conventions. Use `--exclude` flag to skip files matching regex patterns, `--config` to use a YAML configuration file, or `--allow-unicode` to support non-English characters like Turkish.
 
 ### Configuration File Format
 
@@ -151,6 +177,7 @@ files:
   require-descriptive: true
   min-length: 3
   max-length: 50
+  allow-unicode: false  # Set to true to allow non-English characters (Turkish, etc.)
 
   # File type specific rules
   python-files:
@@ -178,6 +205,7 @@ directories:
   require-descriptive: true
   min-length: 3
   max-length: 50
+  allow-unicode: false  # Set to true to allow non-English characters (Turkish, etc.)
 
   # Generic name patterns to reject
   reject-patterns:
@@ -193,3 +221,33 @@ exclude-patterns:
   - "__pycache__"
   - "\\.git/"
 ```
+
+### Unicode Support Configuration
+
+To enable Unicode support for non-English characters:
+
+**Via Configuration File:**
+```yaml
+files:
+  allow-unicode: true    # Enable for files
+
+directories:
+  allow-unicode: true    # Enable for directories
+```
+
+**Via Command Line:**
+```bash
+python3 src/file_name_checker.py --allow-unicode file.md
+python3 src/directory_checker.py --allow-unicode
+```
+
+**Via Pre-commit Hook:**
+```yaml
+hooks:
+  - id: check-file-names
+    args: ['--allow-unicode']
+  - id: check-directory-names
+    args: ['--allow-unicode']
+```
+
+When Unicode support is enabled, the linter accepts Turkish characters (ç, ğ, ı, ö, ş, ü) and other Unicode characters in file and directory names while maintaining all other naming conventions.
