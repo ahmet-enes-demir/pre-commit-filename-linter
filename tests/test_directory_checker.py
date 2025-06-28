@@ -101,10 +101,50 @@ def test_excluded_directories():
             assert len(errors) == 0, f"Excluded directory '{dirname}' should not have errors"
 
 
+def test_directory_unicode_support():
+    """Test Unicode character support in directory names."""
+    # Test without Unicode support (default)
+    checker = DirectoryChecker()
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Turkish directory name should fail by default
+        dir_path = os.path.join(temp_dir, 'çayır')
+        os.makedirs(dir_path)
+        errors = checker.check_directory(dir_path)
+        assert len(errors) > 0, f"Turkish directory should fail without Unicode support: {errors}"
+        assert "non-English characters" in errors[0], f"Error should mention non-English characters: {errors[0]}"
+
+    # Test with Unicode support enabled via argument
+    checker_unicode = DirectoryChecker(allow_unicode=True)
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Turkish directory name should pass with Unicode support
+        dir_path = os.path.join(temp_dir, 'çayır')
+        os.makedirs(dir_path)
+        errors = checker_unicode.check_directory(dir_path)
+        assert len(errors) == 0, f"Turkish directory should pass with Unicode support: {errors}"
+
+    # Test with Unicode support enabled via config
+    config_content = "directories:\n  allow-unicode: true"
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        f.write(config_content)
+        config_file = f.name
+
+    try:
+        checker_config = DirectoryChecker(config_file=config_file)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Turkish directory name should pass with config Unicode support
+            dir_path = os.path.join(temp_dir, 'çayır')
+            os.makedirs(dir_path)
+            errors = checker_config.check_directory(dir_path)
+            assert len(errors) == 0, f"Turkish directory should pass with config Unicode support: {errors}"
+    finally:
+        os.unlink(config_file)
+
+
 if __name__ == '__main__':
     test_kebab_case_directory()
     test_descriptive_directory()
     test_directory_naming()
     test_directory_with_config()
     test_excluded_directories()
+    test_directory_unicode_support()
     print("All directory tests passed!")

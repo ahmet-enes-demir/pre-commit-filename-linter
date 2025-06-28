@@ -13,14 +13,18 @@ from typing import List, Dict, Any
 class DirectoryChecker:
     """Check directory names against naming conventions."""
 
-    def __init__(self, exclude_patterns=None, config_file=None):
+    def __init__(self, exclude_patterns=None, config_file=None, allow_unicode=False):
         self.errors = []
         self.exclude_patterns = exclude_patterns or []
+        self.allow_unicode = allow_unicode
         # Add default exclusions
         self.exclude_patterns.extend([r'\.git/', r'__pycache__', r'\.pytest_cache', r'node_modules'])
         self.config = self.load_config(config_file) if config_file else None
         if self.config and 'exclude-patterns' in self.config:
             self.exclude_patterns.extend(self.config['exclude-patterns'])
+        # Override allow_unicode from config if specified
+        if self.config and 'directories' in self.config:
+            self.allow_unicode = self.config['directories'].get('allow-unicode', self.allow_unicode)
 
     def check_directory(self, dirpath: str) -> List[str]:
         """Check a directory name against naming conventions."""
@@ -29,6 +33,10 @@ class DirectoryChecker:
 
         # Skip hidden directories and common directories
         if dirname.startswith('.') or dirname in {'__pycache__', 'node_modules', '.git', '.pytest_cache'}:
+            return errors
+
+        # Skip if excluded by patterns
+        if self.is_excluded(dirpath):
             return errors
 
         if self.config:
@@ -63,6 +71,10 @@ class DirectoryChecker:
             if re.match(pattern, dirname):
                 errors.append(f"{dirpath}: Directory name matches rejected pattern: {pattern}")
 
+        # Check for Unicode characters when not allowed
+        if not self.allow_unicode and not bool(re.match(r'^[a-zA-Z0-9._-]+$', dirname)):
+            errors.append(f"{dirpath}: Directory name contains non-English characters (set allow-unicode: true to allow)")
+
         # General directory naming
         use_hyphen = dir_config.get('use-hyphen', True)
         use_underscore = dir_config.get('use-underscore', False)
@@ -86,8 +98,12 @@ class DirectoryChecker:
             errors.append(f"{dirpath}: Directory name contains spaces")
 
         # Check for special characters
-        if not bool(re.match(r'^[a-zA-Z0-9._-]+$', dirname)):
-            errors.append(f"{dirpath}: Directory name contains disallowed special characters")
+        if self.allow_unicode:
+            if not bool(re.match(r'^[a-zA-Z0-9çğıöşüÇĞIİÖŞÜâêîôûÂÊÎÔÛ._-]+$', dirname, re.UNICODE)):
+                errors.append(f"{dirpath}: Directory name contains disallowed special characters")
+        else:
+            if not bool(re.match(r'^[a-zA-Z0-9._-]+$', dirname)):
+                errors.append(f"{dirpath}: Directory name contains non-English characters (set allow-unicode: true to allow)")
 
         # Check if descriptive
         if not self.is_descriptive_directory(dirname):
@@ -111,10 +127,20 @@ class DirectoryChecker:
 
         # Allow single words without hyphens
         if '-' not in dirname:
-            return dirname.islower() and dirname.replace('.', '').isalnum()
+            return dirname.islower() and self.is_alphanumeric_unicode(dirname.replace('.', ''))
 
         # Check kebab-case pattern
-        return bool(re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', dirname))
+        if self.allow_unicode:
+            return bool(re.match(r'^[a-z0-9çğıöşüâêîôû]+(-[a-z0-9çğıöşüâêîôû]+)*$', dirname, re.UNICODE))
+        else:
+            return bool(re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', dirname))
+
+    def is_alphanumeric_unicode(self, text: str) -> bool:
+        """Check if text contains only alphanumeric characters including Unicode characters."""
+        if self.allow_unicode:
+            return bool(re.match(r'^[a-zA-Z0-9çğıöşüÇĞIİÖŞÜâêîôûÂÊÎÔÛ]+$', text, re.UNICODE))
+        else:
+            return bool(re.match(r'^[a-zA-Z0-9]+$', text))
 
     def is_descriptive_directory(self, dirname: str) -> bool:
         """Check if directory name is descriptive (not generic)."""
@@ -163,12 +189,14 @@ def find_directories(root_path='.', exclude_patterns=None):
     directories = []
 
     for root, dirs, files in os.walk(root_path):
-        # Skip excluded directories
+        # Filter out excluded directories from further traversal
         dirs[:] = [d for d in dirs if not any(re.search(pattern, os.path.join(root, d)) for pattern in exclude_patterns)]
 
         for dirname in dirs:
             dir_path = os.path.join(root, dirname)
-            directories.append(dir_path)
+            # Only add if not excluded by DirectoryChecker's exclusion logic
+            if not dirname.startswith('.') and dirname not in {'__pycache__', 'node_modules', '.git', '.pytest_cache'}:
+                directories.append(dir_path)
 
     return directories
 
@@ -179,10 +207,11 @@ def main():
     parser.add_argument('directories', nargs='*', help='Directory names to check')
     parser.add_argument('--exclude', action='append', help='Exclude directories matching regex pattern')
     parser.add_argument('--config', help='Path to YAML configuration file')
+    parser.add_argument('--allow-unicode', action='store_true', help='Allow non-English characters (Turkish, etc.)')
 
     args = parser.parse_args()
 
-    checker = DirectoryChecker(exclude_patterns=args.exclude or [], config_file=args.config)
+    checker = DirectoryChecker(exclude_patterns=args.exclude or [], config_file=args.config, allow_unicode=args.allow_unicode)
 
     # If no directories specified, scan the current repository
     if not args.directories:

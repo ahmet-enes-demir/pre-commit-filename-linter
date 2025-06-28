@@ -30,12 +30,16 @@ class FileNameChecker:
     # Files that commonly use underscores
     CONFIG_FILES = {'.yml', '.yaml', '.json', '.toml', '.ini', '.cfg', '.conf'}
 
-    def __init__(self, exclude_patterns=None, config_file=None):
+    def __init__(self, exclude_patterns=None, config_file=None, allow_unicode=False):
         self.errors = []
         self.exclude_patterns = exclude_patterns or []
+        self.allow_unicode = allow_unicode
         self.config = self.load_config(config_file) if config_file else None
         if self.config and 'exclude-patterns' in self.config:
             self.exclude_patterns.extend(self.config['exclude-patterns'])
+        # Override allow_unicode from config if specified
+        if self.config and 'files' in self.config:
+            self.allow_unicode = self.config['files'].get('allow-unicode', self.allow_unicode)
 
     def check_kebab_case(self, filename: str) -> bool:
         """Check if filename follows kebab-case convention."""
@@ -48,20 +52,34 @@ class FileNameChecker:
 
         # Allow single words without hyphens
         if '-' not in name_without_ext:
-            return name_without_ext.islower() and name_without_ext.replace('.', '').isalnum()
+            return name_without_ext.islower() and self.is_alphanumeric_unicode(name_without_ext.replace('.', ''))
 
         # Check kebab-case pattern
-        return bool(re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', name_without_ext))
+        if self.allow_unicode:
+            return bool(re.match(r'^[a-z0-9çğıöşüâêîôû]+(-[a-z0-9çğıöşüâêîôû]+)*$', name_without_ext, re.UNICODE))
+        else:
+            return bool(re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', name_without_ext))
 
     def check_snake_case(self, filename: str) -> bool:
         """Check if filename follows snake_case convention."""
         name_without_ext = Path(filename).stem
         return bool(re.match(r'^[a-z0-9]+(_[a-z0-9]+)*$', name_without_ext))
 
+    def is_alphanumeric_unicode(self, text: str) -> bool:
+        """Check if text contains only alphanumeric characters including Unicode characters."""
+        if self.allow_unicode:
+            return bool(re.match(r'^[a-zA-Z0-9çğıöşüÇĞIİÖŞÜâêîôûÂÊÎÔÛ]+$', text, re.UNICODE))
+        else:
+            return bool(re.match(r'^[a-zA-Z0-9]+$', text))
+
     def has_special_characters(self, filename: str) -> bool:
         """Check if filename contains disallowed special characters."""
-        # Allow alphanumeric, hyphens, underscores, and dots
-        return not bool(re.match(r'^[a-zA-Z0-9._-]+$', filename))
+        if self.allow_unicode:
+            # Allow alphanumeric (including Unicode), hyphens, underscores, and dots
+            return not bool(re.match(r'^[a-zA-Z0-9çğıöşüÇĞIİÖŞÜâêîôûÂÊÎÔÛ._-]+$', filename, re.UNICODE))
+        else:
+            # Allow only English alphanumeric, hyphens, underscores, and dots
+            return not bool(re.match(r'^[a-zA-Z0-9._-]+$', filename))
 
     def has_spaces(self, filename: str) -> bool:
         """Check if filename contains spaces."""
@@ -240,6 +258,7 @@ def main():
     parser.add_argument('--fix', action='store_true', help='Suggest fixes for naming issues')
     parser.add_argument('--exclude', action='append', help='Exclude files matching regex pattern')
     parser.add_argument('--config', help='Path to YAML configuration file')
+    parser.add_argument('--allow-unicode', action='store_true', help='Allow non-English characters (Turkish, etc.)')
 
     args = parser.parse_args()
 
@@ -247,7 +266,7 @@ def main():
         print("No files to check", file=sys.stderr)
         return 0
 
-    checker = FileNameChecker(exclude_patterns=args.exclude or [], config_file=args.config)
+    checker = FileNameChecker(exclude_patterns=args.exclude or [], config_file=args.config, allow_unicode=args.allow_unicode)
     return checker.check_files(args.filenames)
 
 

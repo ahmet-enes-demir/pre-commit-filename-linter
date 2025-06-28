@@ -7,6 +7,7 @@ files:
   require-descriptive: true
   min-length: 3
   max-length: 50
+  allow-unicode: false  # Set to true to allow non-English characters (Turkish, etc.)
 
   # File type specific rules
   python-files:
@@ -34,6 +35,7 @@ directories:
   require-descriptive: true
   min-length: 3
   max-length: 50
+  allow-unicode: false  # Set to true to allow non-English characters (Turkish, etc.)
 
   # Generic name patterns to reject
   reject-patterns:
