@@ -47,3 +47,12 @@ repos:
           pass_filenames: false
           always_run: true
           args: ['--config', '.naming-convention.yaml']
+        # - id: check-file-names-docker
+        #   name: Check file names (Docker)
+        #   entry: ahmetenesdemir/pre-commit-filename-linter:latest filename-linter
+        #   language: docker_image
+        #   files: .*
+        #   pass_filenames: true
+        #   args:
+        #     - --config
+        #     - .naming-convention.yaml
