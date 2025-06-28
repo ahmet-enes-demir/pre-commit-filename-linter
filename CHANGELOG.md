@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/compare/v1.0.0...v1.1.0) (2025-06-28)
+
+
+### Features
+
+* Enhance directory and file name checks to support unicode characters ([#3](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/issues/3)) ([4adc498](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/commit/4adc49823aed11fed47d03645215a15baead7415))
+
 ## 1.0.0 (2025-06-28)
 
 
