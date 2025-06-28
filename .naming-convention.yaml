@@ -45,6 +45,14 @@ directories:
     - "^tmp.*$"
     - "^test[0-9]*$"
 
+# Empty file configuration
+empty-files:
+  allow-empty: false  # Set to true to allow empty files
+
+# Duplicate file configuration
+duplicate-files:
+  allow-duplicates: false  # Set to true to allow duplicate files
+
 # Exclude files and directories matching these patterns
 exclude-patterns:
   - ".*\\.tmp$"

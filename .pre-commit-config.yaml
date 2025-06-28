@@ -33,3 +33,17 @@ repos:
           pass_filenames: false
           always_run: true
           args: ['--config', '.naming-convention.yaml']
+        - id: check-empty-files
+          name: Check empty files
+          entry: python3 src/empty_file_checker.py
+          language: system
+          pass_filenames: false
+          always_run: true
+          args: ['--config', '.naming-convention.yaml']
+        - id: check-duplicate-files
+          name: Check duplicate files
+          entry: python3 src/duplicate_file_checker.py
+          language: system
+          pass_filenames: false
+          always_run: true
+          args: ['--config', '.naming-convention.yaml']

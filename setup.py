@@ -12,6 +12,8 @@ setup(
         'console_scripts': [
             'filename-linter=src.file_name_checker:main',
             'directory-linter=src.directory_checker:main',
+            'empty-file-linter=src.empty_file_checker:main',
+            'duplicate-file-linter=src.duplicate_file_checker:main',
         ],
     },
     install_requires=[

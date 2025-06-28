@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Directory name checker for pre-commit hooks."""
-# Version 1.0.0
 
 import argparse
 import os
