@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/compare/v1.1.0...v1.2.0) (2025-06-28)
+
+
+### Features
+
+* Add checks for empty and duplicate files ([#4](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/issues/4)) ([0d51e17](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/commit/0d51e17694bb4957107558b314f558104368372a))
+
 ## [1.1.0](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/compare/v1.0.0...v1.1.0) (2025-06-28)
 
 
