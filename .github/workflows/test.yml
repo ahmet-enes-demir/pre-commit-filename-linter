@@ -1,0 +1,41 @@
+name: tests
+
+on:
+  push:
+    branches: [ main, develop, test ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.13']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip3 install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        python3 tests/test_file_name_checker.py
+        python3 tests/test_directory_checker.py
+        python3 tests/test_empty_file_checker.py
+        python3 tests/test_duplicate_file_checker.py
+
+    - name: Test CLI tools
+      run: |
+        python3 src/file_name_checker.py --help
+        python3 src/directory_checker.py --help
+        python3 src/empty_file_checker.py --help
+        python3 src/duplicate_file_checker.py --help
