@@ -11,6 +11,8 @@ A pre-commit filename linter to enforce file naming conventions based on Soliner
 - ✅ Checks for descriptive file and directory names
 - ✅ Prevents special characters and spaces
 - ✅ Optional Unicode support for non-English characters (Turkish, etc.)
+- ✅ Detects empty files that shouldn't be committed
+- ✅ Finds duplicate files with identical content
 - ✅ Exclude files and directories with regex patterns
 - ✅ YAML configuration file support
 
@@ -25,6 +27,8 @@ repos:
     hooks:
       - id: check-file-names        # Check file names
       - id: check-directory-names   # Check directory names (scans entire repo)
+      - id: check-empty-files       # Check for empty files
+      - id: check-duplicate-files   # Check for duplicate files
 ```
 
 With custom exclude patterns:
@@ -66,6 +70,21 @@ repos:
         args: ['--allow-unicode']
 ```
 
+With additional file content checks:
+
+```yaml
+repos:
+  - repo: https://github.com/ahmet-enes-demir/pre-commit-filename-linter.git
+    rev: v1.0.0
+    hooks:
+      - id: check-file-names
+      - id: check-directory-names
+      - id: check-empty-files
+        args: ['--config', '.naming-convention.yaml']
+      - id: check-duplicate-files
+        args: ['--config', '.naming-convention.yaml']
+```
+
 ## Naming Rules
 
 ### General Files
@@ -95,6 +114,18 @@ repos:
 - **Enable with `--allow-unicode`** or `allow-unicode: true` in config
 - Supports Turkish and other Unicode characters when enabled
 - Examples: `internet-değişimi.md`, `çayır/` (when Unicode enabled)
+
+### Empty File Detection
+- **Detects empty files** that shouldn't be committed
+- **Allows certain files** to be empty (`__init__.py`, `.gitkeep`, etc.)
+- **Disable with `--allow-empty`** or `allow-empty: true` in config
+- Examples: Empty `.md` files are flagged, but `__init__.py` is allowed
+
+### Duplicate File Detection
+- **Finds files with identical content** using MD5 hashing
+- **Shows original and duplicate relationships**
+- **Disable with `--allow-duplicates`** or `allow-duplicates: true` in config
+- Examples: Two files with same content are flagged as duplicates
 
 ## Examples
 
@@ -157,6 +188,14 @@ python3 src/directory_checker.py --config .naming-convention.yaml src/ tests/
 # Enable Unicode support for non-English characters
 python3 src/file_name_checker.py --allow-unicode internet-değişimi.md
 python3 src/directory_checker.py --allow-unicode çayır/
+
+# Check for empty files
+python3 src/empty_file_checker.py file1.md file2.py
+python3 src/empty_file_checker.py --allow-empty file1.md file2.py
+
+# Check for duplicate files
+python3 src/duplicate_file_checker.py file1.txt file2.txt file3.txt
+python3 src/duplicate_file_checker.py --allow-duplicates file1.txt file2.txt
 ```
 
 ## Configuration
@@ -251,3 +290,58 @@ hooks:
 ```
 
 When Unicode support is enabled, the linter accepts Turkish characters (ç, ğ, ı, ö, ş, ü) and other Unicode characters in file and directory names while maintaining all other naming conventions.
+
+### Empty File Configuration
+
+To configure empty file detection:
+
+**Via Configuration File:**
+```yaml
+empty-files:
+  allow-empty: false  # Set to true to allow all empty files
+```
+
+**Via Command Line:**
+```bash
+python3 src/empty_file_checker.py --allow-empty file.md
+```
+
+**Via Pre-commit Hook:**
+```yaml
+hooks:
+  - id: check-empty-files
+    args: ['--allow-empty']
+```
+
+### Duplicate File Configuration
+
+To configure duplicate file detection:
+
+**Via Configuration File:**
+```yaml
+duplicate-files:
+  allow-duplicates: false  # Set to true to allow duplicate files
+```
+
+**Via Command Line:**
+```bash
+python3 src/duplicate_file_checker.py --allow-duplicates file1.txt file2.txt
+```
+
+**Via Pre-commit Hook:**
+```yaml
+hooks:
+  - id: check-duplicate-files
+    args: ['--allow-duplicates']
+```
+
+### Allowed Empty Files
+
+Certain files are automatically allowed to be empty:
+- `__init__.py` - Python package markers
+- `.gitkeep` - Git directory placeholders
+- `.gitignore` - Git ignore files
+- `.env.example` - Environment file templates
+- `requirements.txt` - Python dependencies
+- `CHANGELOG.md` - Project changelogs
+- `TODO.md` - Project todo lists
