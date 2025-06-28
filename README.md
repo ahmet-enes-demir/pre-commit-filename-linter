@@ -85,6 +85,47 @@ repos:
         args: ['--config', '.naming-convention.yaml']
 ```
 
+Using Docker image directly:
+
+```yaml
+repos:
+  - repo: local
+    hooks:
+      - id: check-file-names-docker
+        name: Check file names (Docker)
+        entry: ahmetenesdemir/pre-commit-filename-linter:latest filename-linter
+        language: docker_image
+        files: .*
+        pass_filenames: true
+        args:
+          - --config
+          - .naming-convention.yaml
+      - id: check-directory-names-docker
+        name: Check directory names (Docker)
+        entry: ahmetenesdemir/pre-commit-filename-linter:latest directory-linter
+        language: docker_image
+        files: .*
+        pass_filenames: false
+        always_run: true
+        args:
+          - --config
+          - .naming-convention.yaml
+      - id: check-empty-files-docker
+        name: Check empty files (Docker)
+        entry: ahmetenesdemir/pre-commit-filename-linter:latest empty-file-linter
+        language: docker_image
+        files: .*
+        pass_filenames: false
+        always_run: true
+      - id: check-duplicate-files-docker
+        name: Check duplicate files (Docker)
+        entry: ahmetenesdemir/pre-commit-filename-linter:latest duplicate-file-linter
+        language: docker_image
+        files: .*
+        pass_filenames: false
+        always_run: true
+```
+
 ## Naming Rules
 
 ### General Files
