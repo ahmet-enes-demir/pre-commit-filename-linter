@@ -10,6 +10,7 @@ setup(
     entry_points={
         'console_scripts': [
             'filename-linter=src.file_name_checker:main',
+            'directory-linter=src.directory_checker:main',
         ],
     },
     python_requires='>=3.6',

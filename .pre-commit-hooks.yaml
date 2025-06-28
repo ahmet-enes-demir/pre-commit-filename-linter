@@ -1,7 +1,7 @@
 - id: check-file-names
   name: Check file names
   description: Check that file names follow naming conventions
-  entry: src/file_name_checker.py
+  entry: filename-linter
   language: python
   files: .*
   exclude: ^(\.git/|__pycache__/|\.pytest_cache/|node_modules/)
@@ -10,7 +10,7 @@
 - id: check-directory-names
   name: Check directory names
   description: Check that directory names follow naming conventions
-  entry: src/directory_checker.py
+  entry: directory-linter
   language: python
   files: .*
   exclude: ^(\.git/|__pycache__/|\.pytest_cache/|node_modules/)
