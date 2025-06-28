@@ -1,0 +1,35 @@
+repos:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v5.0.0
+      hooks:
+        - id: trailing-whitespace
+        - id: end-of-file-fixer
+        - id: check-yaml
+        - id: check-added-large-files
+          args: ["--maxkb=1024"]
+        - id: check-case-conflict
+        - id: check-merge-conflict
+        - id: detect-private-key
+
+    - repo: https://github.com/gitleaks/gitleaks
+      rev: v8.24.2
+      hooks:
+        - id: gitleaks
+
+    - repo: local
+      hooks:
+        - id: check-file-names
+          name: Check file names
+          entry: python3 src/file_name_checker.py
+          language: system
+          files: .*
+          exclude: ^\.git/
+          pass_filenames: true
+          args: ['--config', '.naming-convention.yaml']
+        - id: check-directory-names
+          name: Check directory names
+          entry: python3 src/directory_checker.py
+          language: system
+          pass_filenames: false
+          always_run: true
+          args: ['--config', '.naming-convention.yaml']

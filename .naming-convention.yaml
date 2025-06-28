@@ -1,0 +1,50 @@
+# File naming configuration
+files:
+  use-hyphen: true
+  use-underscore: false
+  use-capital: false
+  allow-spaces: false
+  require-descriptive: true
+  min-length: 3
+  max-length: 50
+
+  # File type specific rules
+  python-files:
+    use-underscore: true
+    use-hyphen: false
+
+  config-files:
+    use-underscore: false
+    use-hyphen: true
+
+  # Generic name patterns to reject
+  reject-patterns:
+    - "^doc[0-9]*$"
+    - "^file[0-9]*$"
+    - "^temp.*$"
+    - "^tmp.*$"
+    - "^test[0-9]*$"
+
+# Directory naming configuration
+directories:
+  use-hyphen: true
+  use-underscore: false
+  use-capital: false
+  allow-spaces: false
+  require-descriptive: true
+  min-length: 3
+  max-length: 50
+
+  # Generic name patterns to reject
+  reject-patterns:
+    - "^dir[0-9]*$"
+    - "^folder[0-9]*$"
+    - "^temp.*$"
+    - "^tmp.*$"
+    - "^test[0-9]*$"
+
+# Exclude files and directories matching these patterns
+exclude-patterns:
+  - ".*\\.tmp$"
+  - "__pycache__"
+  - "\\.git/"
