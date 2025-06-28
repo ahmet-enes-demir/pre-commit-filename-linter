@@ -58,3 +58,4 @@ exclude-patterns:
   - ".*\\.tmp$"
   - "__pycache__"
   - "\\.git/"
+  - "\\.github/"
