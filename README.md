@@ -8,6 +8,7 @@ A pre-commit filename linter to enforce file naming conventions based on Soliner
 - ✅ Allows snake_case for Python files
 - ✅ Detects empty files and duplicate files
 - ✅ Optional Unicode support for international projects
+- ✅ Preserves standard file names (README.md, Dockerfile, etc.)
 - ✅ YAML configuration file support
 
 ## Installation
