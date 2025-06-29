@@ -1,6 +1,6 @@
 # Pre-commit Filename Linter
 
-A pre-commit filename linter to enforce file naming conventions based on Soliner's naming standards.
+A pre-commit filename linter to enforce file naming conventions.
 
 ## Features
 
