@@ -95,7 +95,7 @@ system architecture.md  # Spaces
 
 ## Configuration
 
-Create `.naming-convention.yaml`:
+Create `.naming-convention.yaml` for detailed configuration options:
 
 ```yaml
 files:
@@ -129,3 +129,5 @@ exclude-patterns:
   - "__pycache__"
   - "\\.git/"
 ```
+
+For complete configuration reference and examples, see [Configuration Guide](docs/configuration.md).
