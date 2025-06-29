@@ -60,11 +60,20 @@ repos:
 
 ## Naming Rules
 
-- **Files**: kebab-case (`user-guide.md`, `api-docs.md`)
+- **Files**: kebab-case (`user-guide.md`, `api-docs.md`) - configurable
 - **Python files**: snake_case (`user_service.py`, `api_client.py`)
-- **Directories**: kebab-case (`user-service/`, `test-data/`)
+- **Directories**: kebab-case (`user-service/`, `test-data/`) - configurable
 - **Config files**: both kebab-case and snake_case allowed
 - **Standard files**: `README.md`, `LICENSE`, `Dockerfile` etc. preserved
+
+### Supported Case Styles (Files & Directories)
+- **kebab-case**: `user-guide.md`, `api-documentation/`
+- **snake_case**: `user_service.py`, `config_data/`
+- **PascalCase**: `TestFile.md`, `TestDir/`
+- **camelCase**: `myFile.js`, `myDir/`
+- **SCREAMING_SNAKE_CASE**: `MY_CONFIG.txt`, `MY_CONFIG_DIR/`
+
+> **Note:** To use PascalCase, camelCase, or SCREAMING_SNAKE_CASE, you must also set `use-capital: true` in your configuration.
 
 ## Examples
 
@@ -93,6 +102,9 @@ files:
   use-hyphen: true
   use-underscore: false
   use-capital: false
+  use-pascal-case: false
+  use-camel-case: false
+  use-screaming-snake-case: false
   allow-unicode: false
   min-length: 3
   max-length: 50
@@ -101,6 +113,9 @@ directories:
   use-hyphen: true
   use-underscore: false
   use-capital: false
+  use-pascal-case: false
+  use-camel-case: false
+  use-screaming-snake-case: false
   allow-unicode: false
 
 empty-files:
