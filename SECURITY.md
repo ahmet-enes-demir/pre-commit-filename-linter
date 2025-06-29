@@ -9,6 +9,9 @@
 ## Reporting a Vulnerability
 
 If you discover a security vulnerability, please report it by emailing the maintainers directly rather than opening a public issue.
+Email addresses for maintainers:
+- aedemir789@gmail.com
+- ahmet.enes.demir79@gmail.com
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
