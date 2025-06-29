@@ -1,347 +1,116 @@
 # Pre-commit Filename Linter
 
-A pre-commit filename linter to enforce file naming conventions based on Soliner's naming standards.
+A pre-commit filename linter to enforce file naming conventions.
 
 ## Features
 
 - ✅ Enforces kebab-case for most files and directories
 - ✅ Allows snake_case for Python files
-- ✅ Supports both snake_case and kebab-case for config files
+- ✅ Detects empty files and duplicate files
+- ✅ Optional Unicode support for international projects
 - ✅ Preserves standard file names (README.md, Dockerfile, etc.)
-- ✅ Checks for descriptive file and directory names
-- ✅ Prevents special characters and spaces
-- ✅ Optional Unicode support for non-English characters (Turkish, etc.)
-- ✅ Detects empty files that shouldn't be committed
-- ✅ Finds duplicate files with identical content
-- ✅ Exclude files and directories with regex patterns
 - ✅ YAML configuration file support
 
 ## Installation
 
-Add this to your `.pre-commit-config.yaml`:
+Basic setup:
 
 ```yaml
 repos:
   - repo: https://github.com/ahmet-enes-demir/pre-commit-filename-linter.git
-    rev: v1.0.0
-    hooks:
-      - id: check-file-names        # Check file names
-      - id: check-directory-names   # Check directory names (scans entire repo)
-      - id: check-empty-files       # Check for empty files
-      - id: check-duplicate-files   # Check for duplicate files
-```
-
-With custom exclude patterns:
-
-```yaml
-repos:
-  - repo: https://github.com/ahmet-enes-demir/pre-commit-filename-linter.git
-    rev: v1.0.0
-    hooks:
-      - id: check-file-names
-        args: ['--exclude', '.*\.tmp$', '--exclude', '__pycache__']
-      - id: check-directory-names
-        args: ['--exclude', 'temp.*']
-```
-
-With custom configuration file:
-
-```yaml
-repos:
-  - repo: https://github.com/ahmet-enes-demir/pre-commit-filename-linter.git
-    rev: v1.0.0
-    hooks:
-      - id: check-file-names
-        args: ['--config', '.naming-convention.yaml']
-      - id: check-directory-names
-        args: ['--config', '.naming-convention.yaml']
-```
-
-With Unicode support for non-English characters:
-
-```yaml
-repos:
-  - repo: https://github.com/ahmet-enes-demir/pre-commit-filename-linter.git
-    rev: v1.0.0
-    hooks:
-      - id: check-file-names
-        args: ['--allow-unicode']
-      - id: check-directory-names
-        args: ['--allow-unicode']
-```
-
-With additional file content checks:
-
-```yaml
-repos:
-  - repo: https://github.com/ahmet-enes-demir/pre-commit-filename-linter.git
-    rev: v1.0.0
+    rev: v1.3.0
     hooks:
       - id: check-file-names
       - id: check-directory-names
       - id: check-empty-files
-        args: ['--config', '.naming-convention.yaml']
       - id: check-duplicate-files
+```
+
+With arguments:
+
+```yaml
+repos:
+  - repo: https://github.com/ahmet-enes-demir/pre-commit-filename-linter.git
+    rev: v1.3.0
+    hooks:
+      - id: check-file-names
+        args: ['--config', '.naming-convention.yaml']
+      - id: check-directory-names
+        args: ['--exclude', 'temp.*', '--allow-unicode']
+      - id: check-empty-files
+        args: ['--allow-empty']
+      - id: check-duplicate-files
+        args: ['--allow-duplicates']
+```
+
+Using Docker:
+
+```yaml
+repos:
+  - repo: local
+    hooks:
+      - id: check-file-names-docker
+        name: Check file names (Docker)
+        entry: ahmetenesdemir/pre-commit-filename-linter:latest check-file-names
+        language: docker_image
+        files: .*
+        pass_filenames: true
         args: ['--config', '.naming-convention.yaml']
 ```
 
 ## Naming Rules
 
-### General Files
-- Use **kebab-case** (lowercase with hyphens)
-- Examples: `user-guide.md`, `api-documentation.md`
-
-### Directories
-- Use **kebab-case** (lowercase with hyphens)
-- Examples: `user-service/`, `api-documentation/`, `test-data/`
-
-### Python Files
-- Use **snake_case** (lowercase with underscores)
-- Examples: `user_service.py`, `api_client.py`
-
-### Config Files
-- Support both **snake_case** and **kebab-case**
-- Examples: `docker-compose.yml`, `app_config.json`
-
-### Allowed Standard Files
-- `README.md`, `LICENSE`, `CHANGELOG.md`
-- `Dockerfile`, `Makefile`
-- `.gitignore`, `.env.example`
-- And other common project files
-
-### Unicode Support
-- **Disabled by default** - only English characters allowed
-- **Enable with `--allow-unicode`** or `allow-unicode: true` in config
-- Supports Turkish and other Unicode characters when enabled
-- Examples: `internet-değişimi.md`, `çayır/` (when Unicode enabled)
-
-### Empty File Detection
-- **Detects empty files** that shouldn't be committed
-- **Allows certain files** to be empty (`__init__.py`, `.gitkeep`, etc.)
-- **Disable with `--allow-empty`** or `allow-empty: true` in config
-- Examples: Empty `.md` files are flagged, but `__init__.py` is allowed
-
-### Duplicate File Detection
-- **Finds files with identical content** using MD5 hashing
-- **Shows original and duplicate relationships**
-- **Disable with `--allow-duplicates`** or `allow-duplicates: true` in config
-- Examples: Two files with same content are flagged as duplicates
+- **Files**: kebab-case (`user-guide.md`, `api-docs.md`)
+- **Python files**: snake_case (`user_service.py`, `api_client.py`)
+- **Directories**: kebab-case (`user-service/`, `test-data/`)
+- **Config files**: both kebab-case and snake_case allowed
+- **Standard files**: `README.md`, `LICENSE`, `Dockerfile` etc. preserved
 
 ## Examples
 
-✅ **Good examples:**
+✅ **Good**:
 ```
-Files:
 user-authentication.md
-api-documentation.md
-system-architecture.png
 user_service.py
-config.yml
 docker-compose.yml
-README.md
-
-Directories:
 user-service/
-api-documentation/
-test-data/
-src/
-tests/
 ```
 
-❌ **Bad examples:**
+❌ **Bad**:
 ```
-Files:
-UserAuthentication.md     # Uses uppercase
-user_authentication.md   # Uses underscores for non-Python files
-doc1.md                  # Not descriptive
-system architecture.md   # Contains spaces
-file@name.md            # Special characters
-internet-değişimi.md     # Unicode chars without --allow-unicode
-
-Directories:
-UserService/             # Uses uppercase
-user_service/           # Uses underscores
-dir1/                   # Not descriptive
-my folder/              # Contains spaces
-çayır/                  # Unicode chars without allow-unicode: true
-```
-
-## Manual Usage
-
-You can also run the checkers manually:
-
-```bash
-# Check files
-python3 src/file_name_checker.py file1.md file2.py
-
-# Check directories
-python3 src/directory_checker.py src/ tests/ docs/
-
-# Exclude files/directories with patterns
-python3 src/file_name_checker.py --exclude '.*\.tmp$' --exclude '__pycache__' file1.md file2.py
-python3 src/directory_checker.py --exclude 'temp.*' src/ tests/
-
-# Use custom configuration
-python3 src/file_name_checker.py --config .naming-convention.yaml file1.md file2.py
-python3 src/directory_checker.py --config .naming-convention.yaml src/ tests/
-
-# Enable Unicode support for non-English characters
-python3 src/file_name_checker.py --allow-unicode internet-değişimi.md
-python3 src/directory_checker.py --allow-unicode çayır/
-
-# Check for empty files
-python3 src/empty_file_checker.py file1.md file2.py
-python3 src/empty_file_checker.py --allow-empty file1.md file2.py
-
-# Check for duplicate files
-python3 src/duplicate_file_checker.py file1.txt file2.txt file3.txt
-python3 src/duplicate_file_checker.py --allow-duplicates file1.txt file2.txt
+UserAuthentication.md    # Uppercase
+user_authentication.md  # Underscores in non-Python
+doc1.md                 # Not descriptive
+system architecture.md  # Spaces
 ```
 
 ## Configuration
 
-The checker automatically detects file types and applies appropriate naming conventions. Use `--exclude` flag to skip files matching regex patterns, `--config` to use a YAML configuration file, or `--allow-unicode` to support non-English characters like Turkish.
-
-### Configuration File Format
-
-Create a YAML file (e.g., `.naming-convention.yaml`) with your naming rules:
+Create `.naming-convention.yaml`:
 
 ```yaml
-# File naming configuration
 files:
   use-hyphen: true
   use-underscore: false
   use-capital: false
-  allow-spaces: false
-  require-descriptive: true
+  allow-unicode: false
   min-length: 3
   max-length: 50
-  allow-unicode: false  # Set to true to allow non-English characters (Turkish, etc.)
 
-  # File type specific rules
-  python-files:
-    use-underscore: true
-    use-hyphen: false
-
-  config-files:
-    use-underscore: false
-    use-hyphen: true
-
-  # Generic name patterns to reject
-  reject-patterns:
-    - "^doc[0-9]*$"
-    - "^file[0-9]*$"
-    - "^temp.*$"
-    - "^tmp.*$"
-    - "^test[0-9]*$"
-
-# Directory naming configuration
 directories:
   use-hyphen: true
   use-underscore: false
   use-capital: false
-  allow-spaces: false
-  require-descriptive: true
-  min-length: 3
-  max-length: 50
-  allow-unicode: false  # Set to true to allow non-English characters (Turkish, etc.)
+  allow-unicode: false
 
-  # Generic name patterns to reject
-  reject-patterns:
-    - "^dir[0-9]*$"
-    - "^folder[0-9]*$"
-    - "^temp.*$"
-    - "^tmp.*$"
-    - "^test[0-9]*$"
+empty-files:
+  allow-empty: false
 
-# Exclude files and directories matching these patterns
+duplicate-files:
+  allow-duplicates: false
+
 exclude-patterns:
   - ".*\\.tmp$"
   - "__pycache__"
   - "\\.git/"
 ```
-
-### Unicode Support Configuration
-
-To enable Unicode support for non-English characters:
-
-**Via Configuration File:**
-```yaml
-files:
-  allow-unicode: true    # Enable for files
-
-directories:
-  allow-unicode: true    # Enable for directories
-```
-
-**Via Command Line:**
-```bash
-python3 src/file_name_checker.py --allow-unicode file.md
-python3 src/directory_checker.py --allow-unicode
-```
-
-**Via Pre-commit Hook:**
-```yaml
-hooks:
-  - id: check-file-names
-    args: ['--allow-unicode']
-  - id: check-directory-names
-    args: ['--allow-unicode']
-```
-
-When Unicode support is enabled, the linter accepts Turkish characters (ç, ğ, ı, ö, ş, ü) and other Unicode characters in file and directory names while maintaining all other naming conventions.
-
-### Empty File Configuration
-
-To configure empty file detection:
-
-**Via Configuration File:**
-```yaml
-empty-files:
-  allow-empty: false  # Set to true to allow all empty files
-```
-
-**Via Command Line:**
-```bash
-python3 src/empty_file_checker.py --allow-empty file.md
-```
-
-**Via Pre-commit Hook:**
-```yaml
-hooks:
-  - id: check-empty-files
-    args: ['--allow-empty']
-```
-
-### Duplicate File Configuration
-
-To configure duplicate file detection:
-
-**Via Configuration File:**
-```yaml
-duplicate-files:
-  allow-duplicates: false  # Set to true to allow duplicate files
-```
-
-**Via Command Line:**
-```bash
-python3 src/duplicate_file_checker.py --allow-duplicates file1.txt file2.txt
-```
-
-**Via Pre-commit Hook:**
-```yaml
-hooks:
-  - id: check-duplicate-files
-    args: ['--allow-duplicates']
-```
-
-### Allowed Empty Files
-
-Certain files are automatically allowed to be empty:
-- `__init__.py` - Python package markers
-- `.gitkeep` - Git directory placeholders
-- `.gitignore` - Git ignore files
-- `.env.example` - Environment file templates
-- `requirements.txt` - Python dependencies
-- `CHANGELOG.md` - Project changelogs
-- `TODO.md` - Project todo lists
