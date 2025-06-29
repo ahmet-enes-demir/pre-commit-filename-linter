@@ -191,7 +191,7 @@ class FileNameChecker:
             has_underscore = '_' in name_without_ext
             has_hyphen = '-' in name_without_ext
 
-            if not use_underscore and has_underscore:
+            if not use_underscore and not use_screaming and has_underscore:
                 errors.append(f"{filepath}: Underscores not allowed in filename")
             if not use_hyphen and has_hyphen:
                 errors.append(f"{filepath}: Hyphens not allowed in filename")

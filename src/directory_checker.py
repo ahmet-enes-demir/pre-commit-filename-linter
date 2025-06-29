@@ -84,7 +84,7 @@ class DirectoryChecker:
         has_underscore = '_' in dirname
         has_hyphen = '-' in dirname
 
-        if not use_underscore and has_underscore:
+        if not use_underscore and not use_screaming and has_underscore:
             errors.append(f"{dirpath}: Underscores not allowed in directory name (use hyphens(-) instead, e.g., user-service/)")
         if not use_hyphen and has_hyphen:
             errors.append(f"{dirpath}: Hyphens not allowed in directory name")

@@ -89,7 +89,121 @@ def test_python_files():
         assert len(errors) > 0, f"UserService.py should fail: {errors}"
 
 
+def test_pascal_case():
+    """Test PascalCase validation."""
+    checker = FileNameChecker()
 
+    # Valid PascalCase
+    assert checker.check_pascal_case('TestFile.md')
+    assert checker.check_pascal_case('MyComponent.tsx')
+    assert checker.check_pascal_case('UserService.java')
+
+    # Invalid PascalCase
+    assert not checker.check_pascal_case('testFile.md')  # starts with lowercase
+    assert not checker.check_pascal_case('test_file.md')  # has underscore
+    assert not checker.check_pascal_case('test-file.md')  # has hyphen
+
+
+def test_camel_case():
+    """Test camelCase validation."""
+    checker = FileNameChecker()
+
+    # Valid camelCase
+    assert checker.check_camel_case('testFile.js')
+    assert checker.check_camel_case('myComponent.tsx')
+    assert checker.check_camel_case('configData.json')
+
+    # Invalid camelCase
+    assert not checker.check_camel_case('TestFile.js')  # starts with uppercase
+    assert not checker.check_camel_case('test_file.js')  # has underscore
+    assert not checker.check_camel_case('test-file.js')  # has hyphen
+
+
+def test_screaming_snake_case():
+    """Test SCREAMING_SNAKE_CASE validation."""
+    checker = FileNameChecker()
+
+    # Valid SCREAMING_SNAKE_CASE
+    assert checker.check_screaming_snake_case('API_CONFIG.txt')
+    assert checker.check_screaming_snake_case('MAX_RETRY_COUNT.env')
+    assert checker.check_screaming_snake_case('DATABASE_URL.conf')
+
+    # Invalid SCREAMING_SNAKE_CASE
+    assert not checker.check_screaming_snake_case('api_config.txt')  # lowercase
+    assert not checker.check_screaming_snake_case('API-CONFIG.txt')  # has hyphen
+    assert not checker.check_screaming_snake_case('ApiConfig.txt')  # mixed case
+
+
+def test_pascal_case_with_config():
+    """Test PascalCase with configuration."""
+    config_content = """files:
+  use-hyphen: false
+  use-pascal-case: true
+  use-capital: true"""
+
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        f.write(config_content)
+        config_file = f.name
+
+    try:
+        checker = FileNameChecker(config_file=config_file)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Test PascalCase file should pass
+            pascal_path = os.path.join(temp_dir, 'TestFile.md')
+            with open(pascal_path, 'w') as f:
+                f.write('test')
+            errors = checker.check_file(pascal_path)
+            assert len(errors) == 0, f"PascalCase should pass: {errors}"
+    finally:
+        os.unlink(config_file)
+
+
+def test_camel_case_with_config():
+    """Test camelCase with configuration."""
+    config_content = """files:
+  use-hyphen: false
+  use-camel-case: true
+  use-capital: true"""
+
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        f.write(config_content)
+        config_file = f.name
+
+    try:
+        checker = FileNameChecker(config_file=config_file)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Test camelCase file should pass
+            camel_path = os.path.join(temp_dir, 'testFile.js')
+            with open(camel_path, 'w') as f:
+                f.write('test')
+            errors = checker.check_file(camel_path)
+            assert len(errors) == 0, f"camelCase should pass: {errors}"
+    finally:
+        os.unlink(config_file)
+
+
+def test_screaming_snake_case_with_config():
+    """Test SCREAMING_SNAKE_CASE with configuration."""
+    config_content = """files:
+  use-hyphen: false
+  use-screaming-snake-case: true
+  use-capital: true"""
+
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        f.write(config_content)
+        config_file = f.name
+
+    try:
+        checker = FileNameChecker(config_file=config_file)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Test SCREAMING_SNAKE_CASE file should pass
+            screaming_path = os.path.join(temp_dir, 'API_CONFIG.txt')
+            with open(screaming_path, 'w') as f:
+                f.write('test')
+            errors = checker.check_file(screaming_path)
+            assert len(errors) == 0, f"SCREAMING_SNAKE_CASE should pass: {errors}"
+    finally:
+        os.unlink(config_file)
 
 
 def test_file_unicode_support():
@@ -137,5 +251,11 @@ if __name__ == '__main__':
     test_special_characters()
     test_allowed_files()
     test_python_files()
+    test_pascal_case()
+    test_camel_case()
+    test_screaming_snake_case()
+    test_pascal_case_with_config()
+    test_camel_case_with_config()
+    test_screaming_snake_case_with_config()
     test_file_unicode_support()
     print("All file tests passed!")
