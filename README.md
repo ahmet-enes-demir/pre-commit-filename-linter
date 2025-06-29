@@ -113,12 +113,3 @@ exclude-patterns:
   - "__pycache__"
   - "\\.git/"
 ```
-
-## Available Commands
-
-| Command | Description |
-|---------|-------------|
-| `filename-linter` | Check file naming conventions |
-| `directory-linter` | Check directory naming conventions |
-| `empty-file-linter` | Detect empty files |
-| `duplicate-file-linter` | Find duplicate files |
