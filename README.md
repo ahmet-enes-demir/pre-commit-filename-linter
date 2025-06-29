@@ -50,7 +50,7 @@ repos:
     hooks:
       - id: check-file-names-docker
         name: Check file names (Docker)
-        entry: ahmetenesdemir/pre-commit-filename-linter:latest filename-linter
+        entry: ahmetenesdemir/pre-commit-filename-linter:latest check-file-names
         language: docker_image
         files: .*
         pass_filenames: true
@@ -112,47 +112,6 @@ exclude-patterns:
   - ".*\\.tmp$"
   - "__pycache__"
   - "\\.git/"
-```
-
-## Manual Usage
-
-```bash
-# Basic usage
-python3 src/file_name_checker.py *.md
-python3 src/directory_checker.py
-
-# With configuration file
-python3 src/file_name_checker.py --config .naming-convention.yaml *.md
-
-# With exclude patterns
-python3 src/file_name_checker.py --exclude '.*\.tmp$' --exclude '__pycache__' *.py
-
-# Enable Unicode support
-python3 src/file_name_checker.py --allow-unicode türkçe-dosya.md
-python3 src/directory_checker.py --allow-unicode
-
-# Allow empty files and duplicates
-python3 src/empty_file_checker.py --allow-empty
-python3 src/duplicate_file_checker.py --allow-duplicates
-```
-
-## Docker Usage
-
-```bash
-# Basic usage
-docker run --rm -v $(pwd):/app ahmetenesdemir/pre-commit-filename-linter:latest filename-linter *.md
-
-# With configuration file
-docker run --rm -v $(pwd):/app ahmetenesdemir/pre-commit-filename-linter:latest filename-linter --config .naming-convention.yaml
-
-# With exclude patterns
-docker run --rm -v $(pwd):/app ahmetenesdemir/pre-commit-filename-linter:latest filename-linter --exclude '.*\.tmp$' *.py
-
-# Enable Unicode support
-docker run --rm -v $(pwd):/app ahmetenesdemir/pre-commit-filename-linter:latest filename-linter --allow-unicode
-
-# Check for empty files (allow empty)
-docker run --rm -v $(pwd):/app ahmetenesdemir/pre-commit-filename-linter:latest empty-file-linter --allow-empty
 ```
 
 ## Available Commands
