@@ -53,6 +53,4 @@ repos:
         #   language: docker_image
         #   files: .*
         #   pass_filenames: true
-        #   args:
-        #     - --config
-        #     - .naming-convention.yaml
+        #   args: ['--config', '.naming-convention.yaml']
