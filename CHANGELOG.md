@@ -9,6 +9,18 @@ All notable changes to this project will be documented in this file.
 
 * Add Docker support ([#7](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/issues/7)) ([54923ce](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/commit/54923ce7145fc70129fae4d5b7515cdb46751e9f))
 
+
+### Bug Fixes
+
+*  Docker workflow with branch tagging support and enable trigger when new release published ([#8](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/issues/8)) ([fe7b2c0](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/commit/fe7b2c08ed070bafc985855272fa8700fe311446))
+
+## [1.3.0](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/compare/v1.2.0...v1.3.0) (2025-06-29)
+
+
+### Features
+
+* Add Docker support ([#7](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/issues/7)) ([54923ce](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/commit/54923ce7145fc70129fae4d5b7515cdb46751e9f))
+
 ## [1.3.0](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/compare/v1.2.0...v1.3.0) (2025-06-29)
 
 
