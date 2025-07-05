@@ -65,6 +65,21 @@ class FileNameChecker:
         name_without_ext = Path(filename).stem
         return bool(re.match(r'^[a-z0-9]+(_[a-z0-9]+)*$', name_without_ext))
 
+    def check_pascal_case(self, filename: str) -> bool:
+        """Check if filename follows PascalCase convention."""
+        name_without_ext = Path(filename).stem
+        return bool(re.match(r'^[A-Z][a-zA-Z0-9]*$', name_without_ext))
+
+    def check_camel_case(self, filename: str) -> bool:
+        """Check if filename follows camelCase convention."""
+        name_without_ext = Path(filename).stem
+        return bool(re.match(r'^[a-z][a-zA-Z0-9]*$', name_without_ext))
+
+    def check_screaming_snake_case(self, filename: str) -> bool:
+        """Check if filename follows SCREAMING_SNAKE_CASE convention."""
+        name_without_ext = Path(filename).stem
+        return bool(re.match(r'^[A-Z0-9]+(_[A-Z0-9]+)*$', name_without_ext))
+
     def is_alphanumeric_unicode(self, text: str) -> bool:
         """Check if text contains only alphanumeric characters including Unicode characters."""
         if self.allow_unicode:
@@ -169,19 +184,43 @@ class FileNameChecker:
             # General files
             use_hyphen = file_config.get('use-hyphen', True)
             use_underscore = file_config.get('use-underscore', False)
+            use_pascal = file_config.get('use-pascal-case', False)
+            use_camel = file_config.get('use-camel-case', False)
+            use_screaming = file_config.get('use-screaming-snake-case', False)
 
             has_underscore = '_' in name_without_ext
             has_hyphen = '-' in name_without_ext
 
-            if not use_underscore and has_underscore:
+            if not use_underscore and not use_screaming and has_underscore:
                 errors.append(f"{filepath}: Underscores not allowed in filename")
             if not use_hyphen and has_hyphen:
                 errors.append(f"{filepath}: Hyphens not allowed in filename")
 
-            if use_hyphen and not use_underscore and not self.check_kebab_case(filename):
-                errors.append(f"{filepath}: Files should use kebab-case (use hyphens(-) in the filename)")
-            elif use_underscore and not use_hyphen and not self.check_snake_case(filename):
-                errors.append(f"{filepath}: Files should use snake_case (use underscores(_) in the filename)")
+            # Check case styles - allow any enabled style
+            valid_case = False
+            if use_hyphen and self.check_kebab_case(filename):
+                valid_case = True
+            elif use_underscore and self.check_snake_case(filename):
+                valid_case = True
+            elif use_pascal and self.check_pascal_case(filename):
+                valid_case = True
+            elif use_camel and self.check_camel_case(filename):
+                valid_case = True
+            elif use_screaming and self.check_screaming_snake_case(filename):
+                valid_case = True
+
+            if not valid_case:
+                case_options = []
+                if use_hyphen: case_options.append('kebab-case')
+                if use_underscore: case_options.append('snake_case')
+                if use_pascal: case_options.append('PascalCase')
+                if use_camel: case_options.append('camelCase')
+                if use_screaming: case_options.append('SCREAMING_SNAKE_CASE')
+
+                if case_options:
+                    errors.append(f"{filepath}: Files should use {' or '.join(case_options)}")
+                else:
+                    errors.append(f"{filepath}: Files should use kebab-case (default)")
 
         return errors
 

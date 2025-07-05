@@ -2,7 +2,10 @@
 files:
   use-hyphen: true
   use-underscore: false
-  use-capital: false
+  use-capital: true
+  use-pascal-case: false
+  use-camel-case: false
+  use-screaming-snake-case: false
   allow-spaces: false
   require-descriptive: true
   min-length: 3
@@ -30,7 +33,10 @@ files:
 directories:
   use-hyphen: true
   use-underscore: false
-  use-capital: false
+  use-capital: true
+  use-pascal-case: true
+  use-camel-case: false
+  use-screaming-snake-case: false
   allow-spaces: false
   require-descriptive: true
   min-length: 3

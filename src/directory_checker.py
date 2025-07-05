@@ -77,14 +77,43 @@ class DirectoryChecker:
         # General directory naming
         use_hyphen = dir_config.get('use-hyphen', True)
         use_underscore = dir_config.get('use-underscore', False)
+        use_pascal = dir_config.get('use-pascal-case', False)
+        use_camel = dir_config.get('use-camel-case', False)
+        use_screaming = dir_config.get('use-screaming-snake-case', False)
 
         has_underscore = '_' in dirname
         has_hyphen = '-' in dirname
 
-        if not use_underscore and has_underscore:
+        if not use_underscore and not use_screaming and has_underscore:
             errors.append(f"{dirpath}: Underscores not allowed in directory name (use hyphens(-) instead, e.g., user-service/)")
         if not use_hyphen and has_hyphen:
             errors.append(f"{dirpath}: Hyphens not allowed in directory name")
+
+        # Check case styles
+        valid_case = False
+        if use_hyphen and self.check_kebab_case_directory(dirname):
+            valid_case = True
+        elif use_underscore and self.check_snake_case_directory(dirname):
+            valid_case = True
+        elif use_pascal and self.check_pascal_case_directory(dirname):
+            valid_case = True
+        elif use_camel and self.check_camel_case_directory(dirname):
+            valid_case = True
+        elif use_screaming and self.check_screaming_snake_case_directory(dirname):
+            valid_case = True
+
+        if not valid_case:
+            case_options = []
+            if use_hyphen: case_options.append('kebab-case')
+            if use_underscore: case_options.append('snake_case')
+            if use_pascal: case_options.append('PascalCase')
+            if use_camel: case_options.append('camelCase')
+            if use_screaming: case_options.append('SCREAMING_SNAKE_CASE')
+
+            if case_options:
+                errors.append(f"{dirpath}: Directory should use {' or '.join(case_options)}")
+            else:
+                errors.append(f"{dirpath}: Directory should use kebab-case (default)")
 
         return errors
 
@@ -133,6 +162,22 @@ class DirectoryChecker:
             return bool(re.match(r'^[a-z0-9çğıöşüâêîôû]+(-[a-z0-9çğıöşüâêîôû]+)*$', dirname, re.UNICODE))
         else:
             return bool(re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', dirname))
+
+    def check_snake_case_directory(self, dirname: str) -> bool:
+        """Check if directory name follows snake_case convention."""
+        return bool(re.match(r'^[a-z0-9]+(_[a-z0-9]+)*$', dirname))
+
+    def check_pascal_case_directory(self, dirname: str) -> bool:
+        """Check if directory name follows PascalCase convention."""
+        return bool(re.match(r'^[A-Z][a-zA-Z0-9]*$', dirname))
+
+    def check_camel_case_directory(self, dirname: str) -> bool:
+        """Check if directory name follows camelCase convention."""
+        return bool(re.match(r'^[a-z][a-zA-Z0-9]*$', dirname))
+
+    def check_screaming_snake_case_directory(self, dirname: str) -> bool:
+        """Check if directory name follows SCREAMING_SNAKE_CASE convention."""
+        return bool(re.match(r'^[A-Z0-9]+(_[A-Z0-9]+)*$', dirname))
 
     def is_alphanumeric_unicode(self, text: str) -> bool:
         """Check if text contains only alphanumeric characters including Unicode characters."""
