@@ -25,7 +25,7 @@ Brief description of the changes in this PR.
 
 ## Related Issues
 
-Closes #(issue number)
+Related to #(issue number)
 
 ## Additional Notes
 
