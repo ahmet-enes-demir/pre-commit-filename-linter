@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/compare/v1.3.0...v1.4.0) (2025-07-05)
+
+
+### Features
+
+* Support for pascal, camel and scream sneaking cases ([#10](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/issues/10)) ([d37c280](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/commit/d37c2808d8fbbcdd829b23cb5dae135e302d4eb7))
+
 ## [1.3.0](https://github.com/ahmet-enes-demir/pre-commit-filename-linter/compare/v1.2.0...v1.3.0) (2025-06-29)
 
 
